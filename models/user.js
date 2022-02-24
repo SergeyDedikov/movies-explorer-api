@@ -24,4 +24,14 @@ const userSchema = new Schema({
   },
 });
 
+// уберём поле пароля из отдаваемого объекта
+// при регистрации нового пользователя
+userSchema.set("toJSON", {
+  transform(doc, ret) {
+    const copy = { ...ret }; // создаём копию
+    delete copy.password;
+    return copy; // возвращаем копию без пароля
+  },
+});
+
 module.exports = model("user", userSchema);
