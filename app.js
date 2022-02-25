@@ -4,6 +4,7 @@ const bodyParser = require("body-parser");
 const cookieParser = require("cookie-parser");
 
 const NotFoundError = require("./errors/not-found-error");
+const errorHandler = require("./middlewares/error-handler");
 const router = require("./routes");
 
 const app = express();
@@ -28,6 +29,8 @@ app.use(router);
 app.use((req, res, next) => {
   next(new NotFoundError("Был запрошен несуществующий роут"));
 });
+
+app.use(errorHandler);
 
 app.listen(PORT, () => {
   console.log(`Приложение запущено на localhost:${PORT}`);
