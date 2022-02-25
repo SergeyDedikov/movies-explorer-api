@@ -1,4 +1,6 @@
 const router = require("express").Router();
+const { celebrate, Joi } = require("celebrate");
+const { isURL } = require("validator");
 
 const {
   getMovies,
@@ -6,8 +8,41 @@ const {
   deleteMovie,
 } = require("../controllers/movies");
 
+const longStringRequired = Joi.string().required().max(99);
+const urlStringRequired = Joi.string()
+  .required()
+  .custom(isURL, "Неправильный формат ссылки");
+
 router.get("/movies", getMovies);
-router.post("/movies", createMovie);
-router.delete("/movies/_id", deleteMovie);
+
+router.post(
+  "/movies",
+  celebrate({
+    body: Joi.object().keys({
+      country: longStringRequired(),
+      director: longStringRequired(),
+      duration: Joi.number().required().integer(),
+      year: Joi.string().required().max(4),
+      description: longStringRequired(),
+      image: urlStringRequired(),
+      trailerLink: urlStringRequired(),
+      thumbnail: urlStringRequired(),
+      movieId: Joi.string().required().length(24),
+      nameRU: longStringRequired(),
+      nameEN: longStringRequired(),
+    }),
+  }),
+  createMovie
+);
+
+router.delete(
+  "/movies/_id",
+  celebrate({
+    body: Joi.object().keys({
+      movieId: Joi.string().required().length(24),
+    }),
+  }),
+  deleteMovie
+);
 
 module.exports = router;
