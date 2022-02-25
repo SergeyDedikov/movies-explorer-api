@@ -1,0 +1,34 @@
+const express = require("express");
+const mongoose = require("mongoose");
+const bodyParser = require("body-parser");
+const cookieParser = require("cookie-parser");
+
+const NotFoundError = require("./errors/not-found-error");
+const router = require("./routes");
+
+const app = express();
+const { PORT = 3000, DB_PATH = `mongodb://localhost:27017/bitfilmsdb` } =
+  process.env;
+
+mongoose
+  .connect(DB_PATH, {
+    useNewUrlParser: true,
+    useUnifiedTopology: true,
+    // следующие опции нужно закомментировать для MongoDB <=v.4.2
+    // useCreateIndex: true,
+    // useFindAndModify: false,
+  })
+  .catch((err) => console.log(err));
+
+app.use(bodyParser.json());
+app.use(cookieParser());
+
+app.use(router);
+
+app.use((req, res, next) => {
+  next(new NotFoundError("Был запрошен несуществующий роут"));
+});
+
+app.listen(PORT, () => {
+  console.log(`Приложение запущено на localhost:${PORT}`);
+});
