@@ -15,9 +15,6 @@ mongoose
   .connect(DB_PATH, {
     useNewUrlParser: true,
     useUnifiedTopology: true,
-    // следующие опции нужно закомментировать для MongoDB <=v.4.2
-    // useCreateIndex: true,
-    // useFindAndModify: false,
   })
   .catch((err) => console.log(err));
 
