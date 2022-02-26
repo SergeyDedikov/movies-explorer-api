@@ -6,6 +6,7 @@ const { celebrate, Joi, errors } = require("celebrate");
 
 const NotFoundError = require("./errors/not-found-error");
 const errorHandler = require("./middlewares/error-handler");
+const { requestLogger, errorLogger } = require("./middlewares/logger");
 const router = require("./routes");
 const { createUser, login, signout } = require("./controllers/users");
 
@@ -22,6 +23,7 @@ mongoose
 
 app.use(bodyParser.json());
 app.use(cookieParser());
+app.use(requestLogger); // логгер запросов
 
 // -- Маршруты авторизации
 app.post(
@@ -56,6 +58,7 @@ app.use((req, res, next) => {
   next(new NotFoundError("Был запрошен несуществующий роут"));
 });
 
+app.use(errorLogger); // логгер ошибок
 app.use(errors()); // обработчик ошибок celebrate
 app.use(errorHandler);
 
