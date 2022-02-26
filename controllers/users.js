@@ -1,4 +1,38 @@
+const bcrypt = require("bcryptjs");
+
 const User = require("../models/user");
+const ConflictError = require("../errors/conflict-error");
+const BadRequestError = require("../errors/bad-request-error");
+
+// создаёт пользователя с переданными в теле
+// email, password и name
+const createUser = (req, res, next) => {
+  const { email, password, name } = req.body;
+
+  User.findOne({ email })
+    .then((user) => {
+      if (user) {
+        throw new ConflictError("Пользователь с данныи email уже существует");
+      } else {
+        return bcrypt.hash(password, 10); // захешируем пароль
+      }
+    })
+    .then((hash) => User.create({ email, name, password: hash }))
+    .then((user) => res.status(201).send(user))
+    .catch((err) => {
+      if (err.name === "ValidationError") {
+        next(
+          new BadRequestError(
+            `${Object.values(err.errors)
+              .map((error) => error.message)
+              .join(". ")}`
+          )
+        );
+      } else {
+        next(err);
+      }
+    });
+};
 
 // возвращает информацию о пользователе (email и имя)
 const getUser = (req, res, next) => {
@@ -23,4 +57,4 @@ const updateUser = (req, res, next) => {
     .catch(next);
 };
 
-module.exports = { getUser, updateUser };
+module.exports = { createUser, getUser, updateUser };
