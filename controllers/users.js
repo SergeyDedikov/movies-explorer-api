@@ -6,6 +6,7 @@ const User = require("../models/user");
 const ConflictError = require("../errors/conflict-error");
 const BadRequestError = require("../errors/bad-request-error");
 const Unauthorized = require("../errors/unauthorized-error");
+const NotFoundError = require("../errors/not-found-error");
 
 // создаёт пользователя с переданными в теле
 // email, password и name
@@ -96,21 +97,24 @@ const signout = (req, res) =>
 const getUser = (req, res, next) => {
   const { _id } = req.user;
   return User.findById(_id)
+    .orFail(new NotFoundError(`Пользователь с указанным id:${_id} не найден`))
     .then((user) => res.status(200).send(user))
     .catch(next);
 };
 
 // обновляет информацию о пользователе (email и имя)
 const updateUser = (req, res, next) => {
+  const { _id } = req.user;
   const { email, name } = req.body;
   return User.findByIdAndUpdate(
-    req.user._id,
+    _id,
     { email, name },
     {
       new: true, // обработчик then получит на вход обновлённую запись
       runValidators: true, // данные будут валидированы перед изменением
     }
   )
+    .orFail(new NotFoundError(`Пользователь с указанным id:${_id} не найден`))
     .then((user) => res.status(200).send(user))
     .catch(next);
 };
