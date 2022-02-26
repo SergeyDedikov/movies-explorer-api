@@ -1,4 +1,7 @@
 const Movie = require("../models/movie");
+const BadRequestError = require("../errors/bad-request-error");
+const NotFoundError = require("../errors/not-found-error");
+const Forbidden = require("../errors/forbidden-error");
 
 // возвращает все сохранённые текущим пользователем фильмы
 const getMovies = (req, res, next) => {
@@ -38,13 +41,26 @@ const createMovie = (req, res, next) => {
     owner: req.user._id,
   })
     .then((movie) => res.status(201).send(movie))
-    .catch(next);
+    .catch((err) => {
+      if (err.name === "ValidationError") {
+        next(
+          new BadRequestError(
+            `${Object.values(err.errors)
+              .map((error) => error.message)
+              .join(". ")}`
+          )
+        );
+      } else {
+        next(err);
+      }
+    });
 };
 
 // удаляет сохранённый фильм по id
 const deleteMovie = (req, res, next) => {
   const { movieId } = req.body;
   return Movie.findOne({ movieId })
+    .orFail(new NotFoundError(`Фильм с указанным id:${movieId} не найден`))
     .then((movie) => {
       if (movie) {
         // приведём к строке поле owner карточки
@@ -53,9 +69,9 @@ const deleteMovie = (req, res, next) => {
         if (owner === req.user._id) {
           return movie.remove();
         }
-        return Promise.reject(new Error("Запрещено удалять чужие фильмы!"));
+        return Promise.reject(new Forbidden("Запрещено удалять чужие фильмы!"));
       }
-      return Promise.reject(new Error("Фидьм не найден"));
+      return Promise.reject(new NotFoundError("Фильм не найден"));
     })
     .then(() => res.status(200).send({ message: "Фильм удалён навсегда!" }))
     .catch(next);
