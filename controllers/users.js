@@ -1,8 +1,11 @@
 const bcrypt = require("bcryptjs");
+const jwt = require("jsonwebtoken");
 
+const { NODE_ENV, JWT_SECRET } = process.env;
 const User = require("../models/user");
 const ConflictError = require("../errors/conflict-error");
 const BadRequestError = require("../errors/bad-request-error");
+const Unauthorized = require("../errors/unauthorized-error");
 
 // создаёт пользователя с переданными в теле
 // email, password и name
@@ -34,6 +37,50 @@ const createUser = (req, res, next) => {
     });
 };
 
+// проверяет переданные в теле почту и пароль
+// и возвращает JWT
+const login = (req, res, next) => {
+  const { email, password } = req.body;
+
+  User.findOne({ email })
+    .select("+password")
+    .then((user) => {
+      if (!user) {
+        return Promise.reject(
+          new Unauthorized("Неправильные почта или пароль")
+        );
+      }
+      // сравниваем хеши паролей
+      return bcrypt.compare(password, user.password).then((matched) => {
+        if (!matched) {
+          // хеши не совпали — отклоняем промис
+          return Promise.reject(
+            new Unauthorized("Неправильные почта или пароль")
+          );
+        }
+        // аутентификация успешна — создадим токен на 7 дней
+        const token = jwt.sign(
+          { _id: user._id },
+          NODE_ENV === "production" ? JWT_SECRET : "secret-string",
+          {
+            expiresIn: "7d",
+          }
+        );
+        // вернём куку с токеном
+        return res
+          .cookie("jwt", token, {
+            httpOnly: true,
+            secure: NODE_ENV === "production",
+            sameSite: "none",
+            maxAge: 7 * 24 * 3600000,
+          })
+          .status(200)
+          .end();
+      });
+    })
+    .catch(next);
+};
+
 // возвращает информацию о пользователе (email и имя)
 const getUser = (req, res, next) => {
   const { _id } = req.user;
@@ -57,4 +104,4 @@ const updateUser = (req, res, next) => {
     .catch(next);
 };
 
-module.exports = { createUser, getUser, updateUser };
+module.exports = { createUser, login, getUser, updateUser };
