@@ -11,7 +11,9 @@ const {
 const longStringRequired = Joi.string().required().max(99);
 const urlStringRequired = Joi.string()
   .required()
-  .custom(isURL, "Неправильный формат ссылки");
+  .pattern(
+    /^https?:\/\/w?w?w?\.?[a-zA-Z0-9а-яА-ЯёЁ\-._~:/?#[\]@!$&'()*+,;=]#?/
+  );
 
 router.get("/movies", getMovies);
 
