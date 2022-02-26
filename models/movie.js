@@ -63,6 +63,6 @@ const movieSchema = new Schema({
     type: String,
     required: [true, "Поле nameEN не должно быть пустым"],
   },
-});
+}, { versionKey: false });
 
 module.exports = model("movie", movieSchema);
