@@ -2,7 +2,7 @@ const express = require("express");
 const mongoose = require("mongoose");
 const bodyParser = require("body-parser");
 const cookieParser = require("cookie-parser");
-const { celebrate, Joi } = require("celebrate");
+const { celebrate, Joi, errors } = require("celebrate");
 
 const NotFoundError = require("./errors/not-found-error");
 const errorHandler = require("./middlewares/error-handler");
@@ -56,6 +56,7 @@ app.use((req, res, next) => {
   next(new NotFoundError("Был запрошен несуществующий роут"));
 });
 
+app.use(errors()); // обработчик ошибок celebrate
 app.use(errorHandler);
 
 app.listen(PORT, () => {
