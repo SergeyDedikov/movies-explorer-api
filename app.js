@@ -47,7 +47,7 @@ app.post(
   login
 );
 
-app.get("/signout", signout);
+app.post("/signout", signout);
 
 // -- Защищённые маршруты
 app.use(router);
