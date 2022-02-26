@@ -81,6 +81,17 @@ const login = (req, res, next) => {
     .catch(next);
 };
 
+// удаляет JWT из куки
+const signout = (req, res) =>
+  // очистим значение jwt в куках
+  res
+    .status(200)
+    .clearCookie("jwt", {
+      secure: NODE_ENV === "production",
+      sameSite: "none",
+    })
+    .send({ message: "Выход из системы" });
+
 // возвращает информацию о пользователе (email и имя)
 const getUser = (req, res, next) => {
   const { _id } = req.user;
@@ -104,4 +115,4 @@ const updateUser = (req, res, next) => {
     .catch(next);
 };
 
-module.exports = { createUser, login, getUser, updateUser };
+module.exports = { createUser, login, signout, getUser, updateUser };
