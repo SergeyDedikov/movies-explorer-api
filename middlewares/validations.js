@@ -49,11 +49,9 @@ const validateBodyCreateMovie = celebrate({
     director: longStringRequired.messages({
       "string.required": "Поле director не должно быть пустым",
     }),
-    duration: Joi.number()
-      .message("Поле duration должно быть числом")
-      .required()
-      .message("Поле duration обязательное")
-      .integer(),
+    duration: Joi.number().required().integer().messages({
+      "number.required": "Поле duration обязательное",
+    }),
     year: Joi.string().required().length(4).messages({
       "string.required": "Поле year не должно быть пустым",
       "string.length": "Длина поля year должна быть равна 4",
@@ -74,23 +72,25 @@ const validateBodyCreateMovie = celebrate({
       .messages({
         "string.required": "Поле thumbnail не должно быть пустым",
       }),
-    movieId: Joi.string()
-      .required()
-      .message("Поле movieId обязательное")
-      .length(24)
-      .message("Поле movieId должно быть валидным id"),
-    nameRU: longStringRequired,
-    nameEN: longStringRequired,
+    movieId: Joi.string().required().length(24).messages({
+      "string.required": "Поле movieId обязательное",
+      "string.length": "Поле movieId должно быть валидным id",
+    }),
+    nameRU: longStringRequired.messages({
+      "string.required": "Поле nameRU не должно быть пустым",
+    }),
+    nameEN: longStringRequired.messages({
+      "string.required": "Поле nameEN не должно быть пустым",
+    }),
   }),
 });
 
 const validateBodyDeleteMovie = celebrate({
   body: Joi.object().keys({
-    movieId: Joi.string()
-      .required()
-      .message("Поле movieId обязательное")
-      .length(24)
-      .message("Поле movieId должно быть валидным id"),
+    movieId: Joi.string().required().length(24).messages({
+      "string.required": "Поле movieId обязательное",
+      "string.length": "Поле movieId должно быть валидным id",
+    }),
   }),
 });
 
