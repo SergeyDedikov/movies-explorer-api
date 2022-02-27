@@ -11,7 +11,7 @@ const router = require("./routes");
 const limiter = require("./middlewares/rate-limiter");
 
 const app = express();
-const { PORT = 3000, DB_PATH = `mongodb://localhost:27017/bitfilmsdb` } =
+const { PORT = 3000, DB_PATH = `mongodb://localhost:27017/moviesdb` } =
   process.env;
 
 mongoose
