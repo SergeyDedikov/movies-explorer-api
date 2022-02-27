@@ -2,8 +2,8 @@ const { celebrate, Joi } = require("celebrate");
 
 const nameStringRequired = Joi.string().required().min(2).max(30).messages({
   "string.required": "Поле name не должно быть пустым",
-  "string.min": "Длина поля name должна быть больше 2",
-  "string.max": "Длина поля name должна быть меньше 30",
+  "string.min": "Длина поля name должна быть минимум 2",
+  "string.max": "Длина поля name должна быть максимум 30",
 });
 const emailStringRequired = Joi.string().required().email().messages({
   "string.required": "Поле email обязательное",
