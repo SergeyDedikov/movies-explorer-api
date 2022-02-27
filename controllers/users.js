@@ -106,15 +106,24 @@ const getUser = (req, res, next) => {
 const updateUser = (req, res, next) => {
   const { _id } = req.user;
   const { email, name } = req.body;
-  return User.findByIdAndUpdate(
-    _id,
-    { email, name },
-    {
-      new: true, // обработчик then получит на вход обновлённую запись
-      runValidators: true, // данные будут валидированы перед изменением
-    }
-  )
-    .orFail(new NotFoundError(`Пользователь с указанным id:${_id} не найден`))
+  // проверим новый email на совпадение
+  return User.findOne({ email })
+    .then((user) => {
+      if (user) {
+        throw new ConflictError("Данный email уже занят");
+      } else {
+        return User.findByIdAndUpdate(
+          _id,
+          { email, name },
+          {
+            new: true, // обработчик then получит на вход обновлённую запись
+            runValidators: true, // данные будут валидированы перед изменением
+          }
+        ).orFail(
+          new NotFoundError(`Пользователь с указанным id:${_id} не найден`)
+        );
+      }
+    })
     .then((user) => res.status(200).send(user))
     .catch(next);
 };
