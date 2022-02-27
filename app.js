@@ -7,6 +7,7 @@ const { errors } = require("celebrate");
 const errorHandler = require("./middlewares/error-handler");
 const { requestLogger, errorLogger } = require("./middlewares/logger");
 const router = require("./routes");
+const limiter = require("./middlewares/rate-limiter");
 
 const app = express();
 const { PORT = 3000, DB_PATH = `mongodb://localhost:27017/bitfilmsdb` } =
@@ -22,6 +23,7 @@ mongoose
 app.use(bodyParser.json());
 app.use(cookieParser());
 app.use(requestLogger); // логгер запросов
+app.use(limiter);
 
 app.use(router);
 
