@@ -1,18 +1,17 @@
-const express = require("express");
-const mongoose = require("mongoose");
-const bodyParser = require("body-parser");
-const cookieParser = require("cookie-parser");
-const { errors } = require("celebrate");
-require("dotenv").config();
+const express = require('express');
+const mongoose = require('mongoose');
+const bodyParser = require('body-parser');
+const cookieParser = require('cookie-parser');
+const { errors } = require('celebrate');
+require('dotenv').config();
 
-const errorHandler = require("./middlewares/error-handler");
-const { requestLogger, errorLogger } = require("./middlewares/logger");
-const router = require("./routes");
-const limiter = require("./middlewares/rate-limiter");
+const errorHandler = require('./middlewares/error-handler');
+const { requestLogger, errorLogger } = require('./middlewares/logger');
+const router = require('./routes');
+const limiter = require('./middlewares/rate-limiter');
 
 const app = express();
-const { PORT = 3000, DB_PATH = `mongodb://localhost:27017/moviesdb` } =
-  process.env;
+const { PORT = 3000, DB_PATH = 'mongodb://localhost:27017/moviesdb' } = process.env;
 
 mongoose
   .connect(DB_PATH, {

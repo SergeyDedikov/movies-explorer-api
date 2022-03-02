@@ -1,14 +1,14 @@
-const jwt = require("jsonwebtoken");
+const jwt = require('jsonwebtoken');
 
 const { NODE_ENV, JWT_SECRET } = process.env;
-const Unauthorized = require("../errors/unauthorized-error");
+const Unauthorized = require('../errors/unauthorized-error');
 
 const auth = (req, res, next) => {
   // извлекаем токен из куков запроса
   const token = req.cookies.jwt;
 
   if (!token) {
-    return next(new Unauthorized("Необходима авторизация"));
+    return next(new Unauthorized('Необходима авторизация'));
   }
 
   let payload;
@@ -17,10 +17,10 @@ const auth = (req, res, next) => {
     // проверяем токен на подлинность
     payload = jwt.verify(
       token,
-      NODE_ENV === "production" ? JWT_SECRET : "secret-string"
+      NODE_ENV === 'production' ? JWT_SECRET : 'secret-string',
     );
   } catch (err) {
-    return next(new Unauthorized("Некорректный токен"));
+    return next(new Unauthorized('Некорректный токен'));
   }
 
   req.user = payload; // записываем пейлоуд в объект запроса

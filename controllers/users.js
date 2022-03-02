@@ -1,12 +1,12 @@
-const bcrypt = require("bcryptjs");
-const jwt = require("jsonwebtoken");
+const bcrypt = require('bcryptjs');
+const jwt = require('jsonwebtoken');
 
 const { NODE_ENV, JWT_SECRET } = process.env;
-const User = require("../models/user");
-const ConflictError = require("../errors/conflict-error");
-const BadRequestError = require("../errors/bad-request-error");
-const Unauthorized = require("../errors/unauthorized-error");
-const NotFoundError = require("../errors/not-found-error");
+const User = require('../models/user');
+const ConflictError = require('../errors/conflict-error');
+const BadRequestError = require('../errors/bad-request-error');
+const Unauthorized = require('../errors/unauthorized-error');
+const NotFoundError = require('../errors/not-found-error');
 
 // создаёт пользователя с переданными в теле
 // email, password и name
@@ -16,7 +16,7 @@ const createUser = (req, res, next) => {
   User.findOne({ email })
     .then((user) => {
       if (user) {
-        throw new ConflictError("Пользователь с данныи email уже существует");
+        throw new ConflictError('Пользователь с данныи email уже существует');
       } else {
         return bcrypt.hash(password, 10); // захешируем пароль
       }
@@ -24,13 +24,13 @@ const createUser = (req, res, next) => {
     .then((hash) => User.create({ email, name, password: hash }))
     .then((user) => res.status(201).send(user))
     .catch((err) => {
-      if (err.name === "ValidationError") {
+      if (err.name === 'ValidationError') {
         next(
           new BadRequestError(
             `${Object.values(err.errors)
               .map((error) => error.message)
-              .join(". ")}`
-          )
+              .join('. ')}`,
+          ),
         );
       } else {
         next(err);
@@ -44,11 +44,11 @@ const login = (req, res, next) => {
   const { email, password } = req.body;
 
   User.findOne({ email })
-    .select("+password")
+    .select('+password')
     .then((user) => {
       if (!user) {
         return Promise.reject(
-          new Unauthorized("Неправильные почта или пароль")
+          new Unauthorized('Неправильные почта или пароль'),
         );
       }
       // сравниваем хеши паролей
@@ -56,23 +56,23 @@ const login = (req, res, next) => {
         if (!matched) {
           // хеши не совпали — отклоняем промис
           return Promise.reject(
-            new Unauthorized("Неправильные почта или пароль")
+            new Unauthorized('Неправильные почта или пароль'),
           );
         }
         // аутентификация успешна — создадим токен на 7 дней
         const token = jwt.sign(
           { _id: user._id },
-          NODE_ENV === "production" ? JWT_SECRET : "secret-string",
+          NODE_ENV === 'production' ? JWT_SECRET : 'secret-string',
           {
-            expiresIn: "7d",
-          }
+            expiresIn: '7d',
+          },
         );
         // вернём куку с токеном
         return res
-          .cookie("jwt", token, {
+          .cookie('jwt', token, {
             httpOnly: true,
-            secure: NODE_ENV === "production",
-            sameSite: "none",
+            secure: NODE_ENV === 'production',
+            sameSite: 'none',
             maxAge: 7 * 24 * 3600000,
           })
           .status(200)
@@ -83,15 +83,15 @@ const login = (req, res, next) => {
 };
 
 // удаляет JWT из куки
-const signout = (req, res) =>
-  // очистим значение jwt в куках
+const signout = (req, res) => {
   res
     .status(200)
-    .clearCookie("jwt", {
-      secure: NODE_ENV === "production",
-      sameSite: "none",
+    .clearCookie('jwt', {
+      secure: NODE_ENV === 'production',
+      sameSite: 'none',
     })
-    .send({ message: "Выход из системы" });
+    .send({ message: 'Выход из системы' });
+};
 
 // возвращает информацию о пользователе (email и имя)
 const getUser = (req, res, next) => {
@@ -110,7 +110,7 @@ const updateUser = (req, res, next) => {
   return User.findOne({ email })
     .then((user) => {
       if (user) {
-        throw new ConflictError("Данный email уже занят");
+        throw new ConflictError('Данный email уже занят');
       } else {
         return User.findByIdAndUpdate(
           _id,
@@ -118,9 +118,9 @@ const updateUser = (req, res, next) => {
           {
             new: true, // обработчик then получит на вход обновлённую запись
             runValidators: true, // данные будут валидированы перед изменением
-          }
+          },
         ).orFail(
-          new NotFoundError(`Пользователь с указанным id:${_id} не найден`)
+          new NotFoundError(`Пользователь с указанным id:${_id} не найден`),
         );
       }
     })
@@ -128,4 +128,6 @@ const updateUser = (req, res, next) => {
     .catch(next);
 };
 
-module.exports = { createUser, login, signout, getUser, updateUser };
+module.exports = {
+  createUser, login, signout, getUser, updateUser,
+};

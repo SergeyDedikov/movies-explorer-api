@@ -1,7 +1,7 @@
-const Movie = require("../models/movie");
-const BadRequestError = require("../errors/bad-request-error");
-const NotFoundError = require("../errors/not-found-error");
-const Forbidden = require("../errors/forbidden-error");
+const Movie = require('../models/movie');
+const BadRequestError = require('../errors/bad-request-error');
+const NotFoundError = require('../errors/not-found-error');
+const Forbidden = require('../errors/forbidden-error');
 
 // возвращает все сохранённые текущим пользователем фильмы
 const getMovies = (req, res, next) => {
@@ -42,13 +42,13 @@ const createMovie = (req, res, next) => {
   })
     .then((movie) => res.status(201).send(movie))
     .catch((err) => {
-      if (err.name === "ValidationError") {
+      if (err.name === 'ValidationError') {
         next(
           new BadRequestError(
             `${Object.values(err.errors)
               .map((error) => error.message)
-              .join(". ")}`
-          )
+              .join('. ')}`,
+          ),
         );
       } else {
         next(err);
@@ -69,11 +69,11 @@ const deleteMovie = (req, res, next) => {
         if (owner === req.user._id) {
           return movie.remove();
         }
-        return Promise.reject(new Forbidden("Запрещено удалять чужие фильмы!"));
+        return Promise.reject(new Forbidden('Запрещено удалять чужие фильмы!'));
       }
-      return Promise.reject(new NotFoundError("Фильм не найден"));
+      return Promise.reject(new NotFoundError('Фильм не найден'));
     })
-    .then(() => res.status(200).send({ message: "Фильм удалён навсегда!" }))
+    .then(() => res.status(200).send({ message: 'Фильм удалён навсегда!' }))
     .catch(next);
 };
 
