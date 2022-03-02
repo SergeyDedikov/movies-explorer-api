@@ -4,6 +4,7 @@ const bodyParser = require('body-parser');
 const cookieParser = require('cookie-parser');
 const { errors } = require('celebrate');
 require('dotenv').config();
+const helmet = require('helmet');
 
 const errorHandler = require('./middlewares/error-handler');
 const { requestLogger, errorLogger } = require('./middlewares/logger');
@@ -23,6 +24,7 @@ mongoose
 app.use(bodyParser.json());
 app.use(cookieParser());
 app.use(requestLogger); // логгер запросов
+app.use(helmet());
 app.use(limiter);
 
 app.use(router);
