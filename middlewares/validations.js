@@ -85,10 +85,10 @@ const validateBodyCreateMovie = celebrate({
 });
 
 const validateBodyDeleteMovie = celebrate({
-  body: Joi.object().keys({
-    movieId: Joi.string().required().length(24).messages({
-      'string.required': 'Поле movieId обязательное',
-      'string.length': 'Поле movieId должно быть валидным id',
+  params: Joi.object().keys({
+    _id: Joi.string().required().length(24).messages({
+      'string.required': 'Параметр id обязательный',
+      'string.length': 'Параметр id должен быть валидным',
     }),
   }),
 });

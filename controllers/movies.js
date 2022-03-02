@@ -58,9 +58,9 @@ const createMovie = (req, res, next) => {
 
 // удаляет сохранённый фильм по id
 const deleteMovie = (req, res, next) => {
-  const { movieId } = req.body;
-  return Movie.findOne({ movieId })
-    .orFail(new NotFoundError(`Фильм с указанным id:${movieId} не найден`))
+  const { _id } = req.params;
+  return Movie.findOne({ _id })
+    .orFail(new NotFoundError(`Фильм с указанным id:${_id} не найден`))
     .then((movie) => {
       if (movie) {
         // приведём к строке поле owner карточки
