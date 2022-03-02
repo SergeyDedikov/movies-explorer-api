@@ -72,8 +72,8 @@ const validateBodyCreateMovie = celebrate({
         'string.required': 'Поле thumbnail не должно быть пустым',
       }),
     movieId: Joi.number().required().integer().messages({
-      'string.required': 'Поле movieId обязательное',
-      'string.integer': 'Поле movieId должно быть целым числом',
+      'number.required': 'Поле movieId обязательное',
+      'number.integer': 'Поле movieId должно быть целым числом',
     }),
     nameRU: longStringRequired.messages({
       'string.required': 'Поле nameRU не должно быть пустым',
