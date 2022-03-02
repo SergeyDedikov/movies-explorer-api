@@ -1,4 +1,5 @@
 const { celebrate, Joi } = require('celebrate');
+const { isURL } = require('validator');
 
 const nameStringRequired = Joi.string().required().min(2).max(30)
   .messages({
@@ -14,9 +15,12 @@ const passwordStringRequired = Joi.string().required().messages({
   'string.required': 'Поле password должно быть заполнено',
 });
 const longStringRequired = Joi.string().required().max(99);
-const urlStringRequired = Joi.string()
-  .required()
-  .pattern(/^https?:\/\/w?w?w?\.?[a-zA-Z0-9а-яА-ЯёЁ\-._~:/?#[\]@!$&'()*+,;=]#?/);
+const urlStringRequired = Joi.string().required().custom((value, helpers) => {
+  if (isURL(value)) {
+    return value;
+  }
+  return helpers.message('Невалидная ссылка');
+});
 
 const validateBodyCreateUser = celebrate({
   body: Joi.object().keys({
