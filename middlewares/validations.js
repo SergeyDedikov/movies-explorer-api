@@ -90,8 +90,8 @@ const validateBodyCreateMovie = celebrate({
 
 const validateBodyDeleteMovie = celebrate({
   params: Joi.object().keys({
-    _id: Joi.string().required().length(24).messages({
-      'string.required': 'Параметр id обязательный',
+    _id: Joi.string().hex().length(24).messages({
+      'string.hex': 'Параметр id должен быть валидным',
       'string.length': 'Параметр id должен быть валидным',
     }),
   }),
