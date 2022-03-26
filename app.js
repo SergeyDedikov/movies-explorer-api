@@ -10,6 +10,7 @@ const errorHandler = require('./middlewares/error-handler');
 const { requestLogger, errorLogger } = require('./middlewares/logger');
 const router = require('./routes');
 const limiter = require('./middlewares/rate-limiter');
+const corsHandler = require('./middlewares/cors-handler');
 
 const app = express();
 const { PORT = 3000, DB_PATH = 'mongodb://localhost:27017/moviesdb' } = process.env;
@@ -26,6 +27,7 @@ app.use(cookieParser());
 app.use(requestLogger); // логгер запросов
 app.use(helmet());
 app.use(limiter);
+app.use(corsHandler); // обработаем CORS-запросы
 
 app.use(router);
 
