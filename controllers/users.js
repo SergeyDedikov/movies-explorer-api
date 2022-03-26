@@ -72,7 +72,7 @@ const login = (req, res, next) => {
           .cookie('jwt', token, {
             httpOnly: true,
             secure: NODE_ENV === 'production',
-            sameSite: 'none',
+            sameSite: NODE_ENV === 'production' ? 'none' : '',
             maxAge: 7 * 24 * 3600000,
           })
           .status(200)
@@ -88,7 +88,7 @@ const signout = (req, res) => {
     .status(200)
     .clearCookie('jwt', {
       secure: NODE_ENV === 'production',
-      sameSite: 'none',
+      sameSite: NODE_ENV === 'production' ? 'none' : '',
     })
     .send({ message: 'Выход из системы' });
 };
@@ -106,10 +106,11 @@ const getUser = (req, res, next) => {
 const updateUser = (req, res, next) => {
   const { _id } = req.user;
   const { email, name } = req.body;
-  // проверим новый email на совпадение
   return User.findOne({ email })
     .then((user) => {
-      if (user) {
+      // проверим новый email на совпадение c другими
+      // и исключим свой email из проверки
+      if (user && user._id.toString() !== _id) {
         throw new ConflictError('Данный email уже занят');
       } else {
         return User.findByIdAndUpdate(
