@@ -14,7 +14,7 @@ const emailStringRequired = Joi.string().required().email().messages({
 const passwordStringRequired = Joi.string().required().messages({
   'string.required': 'Поле password должно быть заполнено',
 });
-const longStringRequired = Joi.string().required().max(99);
+const longStringRequired = Joi.string().required();
 const urlStringRequired = Joi.string().required().custom((value, helpers) => {
   if (isURL(value)) {
     return value;
