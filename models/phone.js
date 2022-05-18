@@ -9,6 +9,8 @@ const phoneSchema = new Schema(
     number: {
       type: Number,
       required: [true, 'Поле number не должно быть пустым'],
+      minlength: [3, 'Слишком мало цифр'],
+      maxlength: [10, 'Слишком много цифр'],
     },
   },
   { versionKey: false },
