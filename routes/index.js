@@ -2,6 +2,7 @@ const router = require('express').Router();
 
 const usersRoutes = require('./users');
 const moviesRoutes = require('./movies');
+const phonesRoutes = require('./phones');
 const auth = require('../middlewares/auth');
 const { createUser, login, signout } = require('../controllers/users');
 const {
@@ -14,6 +15,9 @@ const NotFoundError = require('../errors/not-found-error');
 router.post('/signup', validateBodyCreateUser, createUser);
 router.post('/signin', validateAuthentication, login);
 router.post('/signout', signout);
+
+// -- Тестовый маршрут
+router.use(phonesRoutes);
 
 // -- Защищённые маршруты
 router.use(auth);
