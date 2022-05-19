@@ -3,6 +3,7 @@ const allowedCors = [
   'https://localhost:3000',
   'http://movies-favorite.nomoredomains.work',
   'https://movies-favorite.nomoredomains.work',
+  'https://sergeydedikov.github.io',
 ];
 
 const corsHandler = (req, res, next) => {
